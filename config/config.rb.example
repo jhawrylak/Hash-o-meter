@@ -1,2 +1,5 @@
-username = "username"
-password = "password"
+#comment
+consumerkey = "abc123"
+consumersecret = "zzz1234"
+oauthkey = "key"
+oauthsecret = "secret"
