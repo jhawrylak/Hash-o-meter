@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 .bundle
 db/*.sqlite3
 log/*.log
 tmp/
 .sass-cache/
 config/.twitterconfig.rb
+=======
+config/config.rb
+/nbproject/private/
+>>>>>>> e30b3031279fceb11bef7c6ee8e8ff0c5faee187
