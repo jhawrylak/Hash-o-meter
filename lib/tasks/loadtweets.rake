@@ -1,3 +1,14 @@
+##########################################################
+##########################################################
+######                                              ######
+######                                              ######
+######    Loads tweets into the db                  ######
+######    Singleton job                             ######
+######                                              ######
+######                                              ######
+##########################################################
+##########################################################
+
 require 'rubygems'
 require 'tweetstream'
 require File.join(File.dirname(__FILE__),'../Configure.rb')
@@ -40,13 +51,23 @@ task :load_tweets => :environment do
   running = true
   
   while running==true
+    TweetStream::Client.new.track('pizza') do |status,client|
+      (Thread.new(status) { |status|
+      Tweets.new({:text => status.text,
+                  :user => status.user.screen_name,
+                  :time => status.created_at,
+                  :filter=>"pizza"
+      }).save
+      }).run
     
-    begin
-      Process.kill(0,pid)
-    rescue Errno::ESRCH
-      running = false
+      begin
+        Process.kill(0,pid)
+      rescue Errno::ESRCH
+        running = false
+        client.stop
+      end
     end
-    
   end
   t.delete
 end
+
