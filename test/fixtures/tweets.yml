@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/Fixtures.html
+
+one:
+  text: MyString
+  user: MyString
+  time: 2012-02-04 13:11:42
+  filter: MyString
+
+two:
+  text: MyString
+  user: MyString
+  time: 2012-02-04 13:11:42
+  filter: MyString
