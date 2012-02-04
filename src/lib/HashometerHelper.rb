@@ -1,3 +1,0 @@
-module HashometerHelper
- 
-end
