@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 source 'http://rubygems.org'
 
 gem 'rails', '3.1.0'
@@ -30,9 +29,3 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'ruby-debug'
-
-=======
-gem 'tweetstream'
-gem 'yajl-ruby'
-gem 'json'
->>>>>>> e30b3031279fceb11bef7c6ee8e8ff0c5faee187

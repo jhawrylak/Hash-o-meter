@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://www.netbeans.org/ns/project/1">
-<<<<<<< HEAD
     <type>org.netbeans.modules.ruby.railsprojects</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/rails-project/1">
             <name>hashometer</name>
-=======
-    <type>org.netbeans.modules.ruby.rubyproject</type>
-    <configuration>
-        <data xmlns="http://www.netbeans.org/ns/ruby-project/1">
-            <name>hashometer</name>
-            <source-roots>
-                <root id="src.dir"/>
-            </source-roots>
-            <test-roots/>
->>>>>>> e30b3031279fceb11bef7c6ee8e8ff0c5faee187
         </data>
     </configuration>
 </project>
