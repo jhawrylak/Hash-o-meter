@@ -1,3 +1,3 @@
 class Tweets < ActiveRecord::Base
-  attr_accessible :name, :time, :userid, :text, :ticount
+  attr_accessible :filter, :time, :user, :text, :ticount
 end

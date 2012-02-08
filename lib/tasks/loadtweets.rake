@@ -17,10 +17,11 @@ desc "Run a job to load tweets to the db"
 task :load_tweets => :environment do
   #ensure we are the only tweet-loading task running
   pid = ENV['PID'].to_i
+  trackword = ENV["TRACK"] || "pizza" #yum
   t = Tweetload.first
   exit(1) unless t.nil?   #die if there is another :load_tweets
   #load this process as the tweet-loading process
-  t = Tweetload.new({:process => Process.pid})
+  t = Tweetload.new({:process => Process.pid, :tracking => trackword})
   exit(1) unless t.save #if we can't mark ourselves, die
   #ensure there was no race condition
   if Tweetload.all.length > 1
@@ -48,7 +49,7 @@ task :load_tweets => :environment do
     c.parser   = :yajl
   end
 
-  trackword = ENV["TRACK"] || "pizza" #yum
+  
 
   threads = []
   TweetStream::Client.new.track(trackword) do |status,client|
@@ -57,7 +58,7 @@ task :load_tweets => :environment do
                    Tweets.new({:text => status.text,
                                :user => status.user.screen_name,
                                :time => status.created_at,
-                               :filter => trackword
+                               :filter => $trackword
                                }).save
     })
     threads << newthread
