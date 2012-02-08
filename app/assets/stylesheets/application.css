@@ -5,3 +5,13 @@
  *= require_self
  *= require_tree . 
 */
+
+body {
+	font-family: Ariel;
+	font-size: 1.0em;
+	white-space:normal;
+}
+
+div#content {
+	width:800px;
+}

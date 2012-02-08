@@ -19,7 +19,6 @@ task :load_tweets => :environment do
   pid = ENV['PID'].to_i
   t = Tweetload.first
   exit(1) unless t.nil?   #die if there is another :load_tweets
-
   #load this process as the tweet-loading process
   t = Tweetload.new({:process => Process.pid})
   exit(1) unless t.save #if we can't mark ourselves, die
@@ -37,6 +36,7 @@ task :load_tweets => :environment do
     :oauthkey,
     :oauthsecret
   )
+  Tweets.delete_all
 
   #pass them along to tweetstream
   TweetStream.configure do |c|
@@ -57,7 +57,7 @@ task :load_tweets => :environment do
                    Tweets.new({:text => status.text,
                                :user => status.user.screen_name,
                                :time => status.created_at,
-                               :filter=>trackword
+                               :filter => trackword
                                }).save
     })
     threads << newthread
@@ -79,7 +79,7 @@ task :load_tweets => :environment do
     rescue Errno::ESRCH
       until threads.empty?
         sleep 1 #
-        (threads.collect {|thread|
+        (threads = threads.map {|thread|
            if thread.alive?
              thread
            else
@@ -90,7 +90,6 @@ task :load_tweets => :environment do
       client.stop
     end
   end
-
   #we're no longer the job
   t.delete
 end

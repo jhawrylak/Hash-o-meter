@@ -1,1 +1,53 @@
-Welcome to the application!
+<script class="include" type="text/javascript" src="/assets/jquery.jqplot.min.js"></script>
+<script class="include" language="javascript" type="text/javascript" src="/assets/jqplot.barRenderer.min.js"></script>
+<script class="include" language="javascript" type="text/javascript" src="/assets/jqplot.categoryAxisRenderer.min.js"></script>
+<script class="include" language="javascript" type="text/javascript" src="/assets/jqplot.pointLabels.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var s1 = <%= "[#{@vals.join(',')}]" %>;
+    // Can specify a custom tick Array.
+    // Ticks should match up one for each y value (category) in the series.
+    var ticks = <%= "[#{@times.join(',')}]"%>;
+
+	var plot1 = $.jqplot('chart', [s1], {
+	        // The "seriesDefaults" option is an options object that will
+	        // be applied to all series in the chart.
+	        seriesDefaults:{
+	            renderer:$.jqplot.BarRenderer,
+	            rendererOptions: {fillToZero: true}
+	        },
+	        // Custom labels for the series are specified with the "label"
+	        // option on the series option.  Here a series option object
+	        // is specified for each series.
+	        series:[
+	            {label:'Tweets'}
+	        ],
+	        // Show the legend and put it outside the grid, but inside the
+	        // plot container, shrinking the grid to accomodate the legend.
+	        // A value of "outside" would not shrink the grid and allow
+	        // the legend to overflow the container.
+	        legend: {
+	            show: true,
+	            placement: 'outsideGrid'
+	        },
+	        axes: {
+	            // Use a category axis on the x axis and use our custom ticks.
+	            xaxis: {
+	                renderer: $.jqplot.CategoryAxisRenderer,
+	                ticks: ticks,
+					label: 'minutes ago'
+	            },
+	            // Pad the y axis just a little so bars can get close to, but
+	            // not touch, the grid boundaries.  1.2 is the default padding.
+	            yaxis: {
+	                pad: 1.05
+	            }
+	        }
+	    });
+	});
+	
+</script>
+<div><p>Total tweets in the last hour: <%= @total %></p></div>
+
+<div id="chart" style="width:<%="#{20*@firstt}px"%>;height:300px;" />
+
