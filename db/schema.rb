@@ -10,13 +10,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120204181142) do
+ActiveRecord::Schema.define(:version => 20120208021145) do
 
   create_table "tweetloads", :force => true do |t|
     t.integer  "process"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "refresh"
+    t.string   "tracking"
   end
 
   create_table "tweets", :force => true do |t|

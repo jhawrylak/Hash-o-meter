@@ -1,5 +1,7 @@
 Hashometer::Application.routes.draw do
   get "plot/show"
+  
+  get 'pages/new'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

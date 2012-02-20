@@ -1,24 +1,52 @@
 class PagesController < ApplicationController
-  def home
-    call_rake(:load_tweets, :pid => Process.pid, :track => "pizza") if Tweetload.first.nil?
-    t = Tweets.find_by_sql("SELECT count(*) c, strftime('%M', time) text FROM Tweets t WHERE t.time > datetime('now','-60 minute') group by strftime('%M',time) ORDER BY TEXT ASC")
-    
-    @firstt = minutes_ago(t.first)
-    @firstt = 60 if @firstt < 60
-    
+  def new
+    @filterword = "pizza"
+    call_rake(:load_tweets, :pid => Process.pid, :track => @filterword) if Tweetload.first.nil?
+    redirect_to :root
+  end
+  
+  def home    
+    @firstt = 10
+    @total = 0
     @vals = []
     @times = []
-    (0...(@firstt+1)).each do |i|
+    @filterword = "pizza"
+    @tweets = []
+    
+    t = Tweets.find_by_sql("SELECT count(*) c, strftime('%M', time) text FROM Tweets t WHERE t.time > datetime('now','-1 hour') group by strftime('%M',time) ORDER BY TEXT ASC")
+    # t = []
+    #first call, probably
+    if t.empty?
+      @firstt = 10
+      @total = 0
+      (0..10).each do |i|
+        @vals << 0
+        @times << i.to_s
+      end
+      @times.reverse
+      return
+    end
+    
+    @filterword = Tweetload.first.tracking unless Tweetload.first.nil?
+    @firstt = minutes_ago(t.first)
+    @firstt = 10 if @firstt < 10
+
+    (0..@firstt).each do |i|
       @vals << 0
       @times << i.to_s
     end
     @times = @times.reverse
+    
     t.each do |twt|
       mins = minutes_ago(twt)
       i = @times.index(mins.to_s)
       @vals[i] = twt.c
     end
-    
+    lid = Tweets.last.id
+    fid = Tweets.first.id
+    (0...[lid-fid,5].min).each do
+      @tweets << Tweets.find_by_id(rand((lid-fid))+fid)
+    end
     @total = @vals.sum
   end
   
