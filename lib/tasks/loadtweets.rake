@@ -71,7 +71,17 @@ task :load_tweets => :environment do
   
   begin
     socket = UNIXSocket.new('/tmp/echo.sock')
-
+  rescue
+    sleep 1
+    begin
+      Process.kill(0,pid)
+    rescue Errno::ESRCH
+      exit
+    end
+    retry
+  end
+  
+  begin
     #load our twitter API credentials from a file
     config = Configure.readconfig(
       File.join(File.dirname(__FILE__),'../../config/twitterconfig.rb'),

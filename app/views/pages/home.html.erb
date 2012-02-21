@@ -3,40 +3,40 @@
 <script class="include" language="javascript" type="text/javascript" src="/assets/jqplot.categoryAxisRenderer.min.js"></script>
 <script class="include" language="javascript" type="text/javascript" src="/assets/jqplot.pointLabels.min.js"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-    var s1 = <%= "[#{@vals.join(',')}]" %>;
-    var ticks = <%= "[#{@times.join(',')}]"%>;
-
-	var plot1 = $.jqplot('chart', [s1], {
-	        seriesDefaults:{
-	            renderer:$.jqplot.BarRenderer,
-	            rendererOptions: {fillToZero: true}
-	        },
-	        series:[
-	            {label:'Tweets'}
-	        ],
-	        axes: {
-	            xaxis: {
-	                renderer: $.jqplot.CategoryAxisRenderer,
-	                ticks: ticks,
-					label: 'minutes ago'
-	            },
-	            yaxis: {
-	                pad: 1.05
-	            }
-	        }
-	    });
-	});
-	$(function() { $('#content').width('<%="#{[(18*@firstt)+30,800].max}px"%>')});
-	$(function() { $.get('/pages/plot_values',
+	$(function() { });
+	var refresh = function() {  
+		$.get('/pages/plot_values',
 					function(data)
 					{
 						// alert(data.times);
-					}
-	);
-	});
+						$('#chart').html('').width((18*data.times.length)+30);
+						$('#content').width(Math.max((18*data.times.length)+60,800));
+						$('#stats').html(data.total)
+						var plot1 = $.jqplot('chart', [data.vals], {
+						        seriesDefaults:{
+						            renderer:$.jqplot.BarRenderer,
+						            rendererOptions: {fillToZero: true}
+						        },
+						        series:[
+						            {label:'Tweets'}
+						        ],
+						        axes: {
+						            xaxis: {
+						                renderer: $.jqplot.CategoryAxisRenderer,
+						                ticks: data.times,
+										label: 'minutes ago'
+						            },
+						            yaxis: {
+						                pad: 1.05
+						            }
+						        }
+						    });
+						setTimeout(refresh,10000);
+						});
+					};
+		setTimeout(refresh,1000);
 </script>
-<div><p><%= "#{pluralize(@total,'tweet','tweets')} in the past hour for the tag \"#{@filterword}\"" %></p>
+<div><p id="stats"></p>
 	<p>Random Tweets:
 	<p><ul style="list-style:none;"><% @tweets.each do |twt| %>
 		<li style="padding-bottom:10px;"><%= "#{twt.user}: #{twt.text}" %></li>
@@ -46,5 +46,5 @@ $(document).ready(function(){
 </div>
 
 
-<div id="chart" style="margin-left:auto;margin-right:auto;width:<%="#{(18*@firstt)+30}px"%>;height:300px;" />
+<div id="chart" style="margin-left:auto;margin-right:auto;height:300px;" />
 
