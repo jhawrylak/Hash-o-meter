@@ -17,45 +17,29 @@ require File.join(File.dirname(__FILE__),'../Configure.rb')
 desc "Run a job to load tweets to the db"
 $tweetCount = 0
 def trackTweets(pid,socket,word)
-  threads = []
   
   TweetStream::Client.new.track(word) do |status,client|
-    #don't tie up our stream with the DB
-    newthread = (Thread.new(status,word) { |status,trackword|
-                   Tweets.new({:text => status.text,
-                               :user => status.user.screen_name,
-                               :time => status.created_at,
-                               :filter => trackword
-                               }).save
-    })
-    threads << newthread
-    newthread.run
+    # puts "t-in"
+    text = "#{status.text}"
+    # text = nil
+    time = Time.now
+    filter = word
+    user = status.user.screen_name
+    newTweet = Tweets.new({:text => text,
+                                :user => user,
+                               :time => time,
+                               :filter => filter
+                               })
+    newTweet.save
     $tweetCount = $tweetCount+1
-    socket.print("#{status.text}")
+    socket.print("#{text}")
     #clear out our stopped threads
-    (threads.collect {|thread|
-          if thread.alive?
-             thread
-               else
-                 nil
-               end
-            }).compact! if threads.length > 500
-        
     #if our rails process was killed,
     #clear out our threads, then stop the client
     begin
       Process.kill(0,pid)
     rescue Errno::ESRCH
-      until threads.empty?
-                    sleep 1 #
-                    (threads = threads.map {|thread|
-                       if thread.alive?
-                         thread
-                       else
-                         nil
-                       end
-                    }).compact!
-                  end
+      puts "ESRCH"
       client.stop
     end
   end
@@ -80,6 +64,7 @@ task :load_tweets => :environment do
   sql.execute("PRAGMA synchronous = OFF")
   
   Signal.trap("TERM") do
+    # puts "sigTERM"
     t.delete
     exit(1)
   end
@@ -106,8 +91,10 @@ task :load_tweets => :environment do
       c.auth_method = :oauth
       c.parser   = :yajl
     end
+    
     trackTweets(pid,socket,trackword)
-  rescue
+  rescue Exception => e
+    puts "Exception: #{e.message}"
   end
   #we're no longer the job
   t.delete

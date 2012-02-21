@@ -5,8 +5,6 @@
 <script type="text/javascript">
 $(document).ready(function(){
     var s1 = <%= "[#{@vals.join(',')}]" %>;
-    // Can specify a custom tick Array.
-    // Ticks should match up one for each y value (category) in the series.
     var ticks = <%= "[#{@times.join(',')}]"%>;
 
 	var plot1 = $.jqplot('chart', [s1], {
@@ -30,6 +28,13 @@ $(document).ready(function(){
 	    });
 	});
 	$(function() { $('#content').width('<%="#{[(18*@firstt)+30,800].max}px"%>')});
+	$(function() { $.get('/pages/plot_values',
+					function(data)
+					{
+						// alert(data.times);
+					}
+	);
+	});
 </script>
 <div><p><%= "#{pluralize(@total,'tweet','tweets')} in the past hour for the tag \"#{@filterword}\"" %></p>
 	<p>Random Tweets:
@@ -37,6 +42,7 @@ $(document).ready(function(){
 		<li style="padding-bottom:10px;"><%= "#{twt.user}: #{twt.text}" %></li>
 		<% end %>
 	</ul></p>
+	<p>Start tracking: <%= link_to 'Click', :pages_new%>
 </div>
 
 
