@@ -1,7 +1,12 @@
 class PagesController < ApplicationController
   def new
-    @filterword = "pizza"
-    call_rake(:load_tweets, :pid => Process.pid, :track => @filterword) if Tweetload.first.nil?
+    @filterword = params[:track][:filter]
+    tl = Tweetload.first
+    begin
+    Process.kill("SIGTERM",tl.process) unless tl.nil?
+    rescue
+    end
+    call_rake(:load_tweets, :pid => Process.pid, :track => @filterword)
     redirect_to :root
   end
   
@@ -33,16 +38,21 @@ class PagesController < ApplicationController
           @vals[i] = twt.c || 0 unless i.nil?
         end
       end
-    render :json => {:vals => @vals, :times => @times, :total => "#{@vals.sum} tweets in the past hour for the tag \"#{@filterword}\""}
+      
+      @tweets = []
+      begin
+      lid = Tweets.last.id 
+      fid = Tweets.first.id
+      (0...[(lid-fid)+1,5].min).each do
+        @tweets << Tweets.find_by_id(rand((lid-fid)+1)+fid).text
+      end
+      rescue
+        @tweets << ""
+      end
+    render :json => {:vals => @vals, :times => @times, :total => "#{@vals.sum} tweets in the past hour for the tag \"#{@filterword}\"", :tweets => @tweets}
   end
   
   def home    
-    @tweets = []
-    lid = Tweets.last.id
-    fid = Tweets.first.id
-    (0...[lid-fid,5].min).each do
-      @tweets << Tweets.find_by_id(rand((lid-fid))+fid)
-    end
   end
   
   private

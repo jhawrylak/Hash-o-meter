@@ -11,6 +11,9 @@
 						// alert(data.times);
 						$('#chart').html('').width((18*data.times.length)+30);
 						$('#content').width(Math.max((18*data.times.length)+60,800));
+						$('#rndTweets').html('');
+						for(i = 0; i < data.tweets.length; i++)
+							$('#rndTweets').append('<li>' + data.tweets[i] + '</li>');
 						$('#stats').html(data.total)
 						var plot1 = $.jqplot('chart', [data.vals], {
 						        seriesDefaults:{
@@ -34,15 +37,18 @@
 						setTimeout(refresh,10000);
 						});
 					};
-		setTimeout(refresh,1000);
+		setTimeout(refresh,2500);
 </script>
 <div><p id="stats"></p>
 	<p>Random Tweets:
-	<p><ul style="list-style:none;"><% @tweets.each do |twt| %>
-		<li style="padding-bottom:10px;"><%= "#{twt.user}: #{twt.text}" %></li>
-		<% end %>
+	<p><ul id="rndTweets" style="list-style:none;">
 	</ul></p>
-	<p>Start tracking: <%= link_to 'Click', :pages_new%>
+	<p>
+		<%= form_for(:track, :url => pages_new_path) do |f| %>
+			<%= f.label :filter %> <%=f.text_field :filter%>
+			<%= f.submit "Start" %>
+			<% end %>
+		</p>
 </div>
 
 
